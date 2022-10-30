@@ -58,6 +58,7 @@ print("Hello there, welcome to my 8-Puzzle Solver.")
 print("If you want to use a preset puzzle, enter '1'. If instead you want to create your own, enter '2'.")
 decision = int(input())
 
+#preset puzzle
 if (decision == 1):
     print("Using sample puzzle")
     currPuzzle = depth2
@@ -65,14 +66,25 @@ if (decision == 1):
     printPuzzle(currPuzzle)
     print("FIXME")
 
+#custom puzzle
 elif (decision == 2):
-    print("Please enter your puzzle below. Use a comma (,) as a delimiter for each row, please dont use spaces. Only valid 8-Puzzles are accepted. Press enter when you are done with each row.")
+    #Get user input
+    print("Please enter your puzzle below. Use a SPACE as a delimiter for each number. Only valid 8-Puzzles are accepted. Press enter when you are done with each row.")
     row1 = str(input("First Row: "))
     row2 = str(input("Second Row: "))
     row3 = str(input("Third Row: "))
 
-    ##Fix creation of puzzle here 
-    currPuzzle = [[row1], [row2], [row3]]
+    #Split strings to get numbers
+    row1 = row1.split(" ", 2)
+    row2 = row2.split(" ", 2)
+    row3 = row3.split(" ", 2)
+
+    #change numbers from str to int
+    row1 = list(map(int, row1))
+    row2 = list(map(int, row2))
+    row3 = list(map(int, row3))
+
+    currPuzzle = [row1, row2, row3]
 
     printPuzzle(currPuzzle)
     print("FIXME")
