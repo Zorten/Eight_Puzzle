@@ -4,7 +4,13 @@
 ### A* with Misplaced Tile Heuristic.
 ### A* with Manhattan Distance Heuristic.
 
-#####Variables
+#####Functions
+
+##Function to display puzzle
+def printPuzzle(puzzle):
+    print (puzzle[0])
+    print (puzzle[1])
+    print (puzzle[2])
 
 
 #####Sample puzzles, blank space represented with 0
@@ -56,7 +62,7 @@ if (decision == 1):
     print("Using sample puzzle")
     currPuzzle = depth2
 
-    print(currPuzzle)
+    printPuzzle(currPuzzle)
     print("FIXME")
 
 elif (decision == 2):
@@ -68,7 +74,7 @@ elif (decision == 2):
     ##Fix creation of puzzle here 
     currPuzzle = [[row1], [row2], [row3]]
 
-    print(currPuzzle)
+    printPuzzle(currPuzzle)
     print("FIXME")
 
 
