@@ -5,6 +5,7 @@
 ### A* with Manhattan Distance Heuristic.
 
 from queue import PriorityQueue
+from turtle import position
 #####Sample puzzles, blank space represented with 0
 #Solution state
 depth0 = [[1,2,3],
@@ -61,6 +62,24 @@ def printPuzzle(puzzle):
     print (puzzle[0])
     print (puzzle[1])
     print (puzzle[2])
+    print ("\n")
+
+##Function to find blank space in puzzle
+##returns the position as a list [row, column]
+def findBlank(puzzle):
+    #index each row for the number 0
+    for row in puzzle:
+        try:
+            col = row.index(0)
+        except:
+            col = -1
+
+        if col >= 0:
+            position = [puzzle.index(row), col]
+            return position
+
+    return None
+            
 
 ##Main function
 def main():      
@@ -150,11 +169,14 @@ def selectAlgorithm(puzzle):
 
 #Function for Uniform Cost Search algorithm
 def uniformCost(puzzle, heuristic):
-    startNode = Nodes(puzzle, heuristic, 0)
+    startNode = Nodes(puzzle, heuristic, 0, None)
     workingQueue = PriorityQueue()
     workingQueue.put((1, startNode))
     item = workingQueue.get()
     printPuzzle(item[1].puzzle)
+    print ("Position of blank space: ")
+    position = findBlank(item[1].puzzle)
+    print(position)
 
 def misplacedTile(puzzle, heuristic):
     print("FIXME")
