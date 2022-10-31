@@ -4,6 +4,45 @@
 ### A* with Misplaced Tile Heuristic.
 ### A* with Manhattan Distance Heuristic.
 
+#####Sample puzzles, blank space represented with 0
+#Solution state
+depth0 = [[1,2,3],
+          [4,5,6],
+          [7,8,0]]
+#Baby Stuff
+depth2 = [[1,2,3],
+          [4,5,6],
+          [0,7,8]]
+#Very Easy
+depth4 = [[1,2,3],
+          [5,0,6],
+          [4,7,8]]
+#Easy
+depth8 = [[1,3,6],
+          [5,0,2],
+          [4,7,8]]
+#Not Too Bad
+depth12 = [[1,3,6],
+          [5,0,7],
+          [4,8,2]]
+#Starting to Sweat
+depth16 = [[1,6,7],
+          [5,0,3],
+          [4,8,2]]
+#Hard
+depth20 = [[7,1,2],
+          [4,8,5],
+          [6,3,0]]
+#Very Hard
+depth24 = [[0,7,2],
+          [4,6,1],
+          [3,5,8]]
+#Yikes! Good Luck!
+depth31 = [[8,6,7],
+          [2,5,4],
+          [3,0,1]]
+
+
 #####Functions
 
 ##Function to display puzzle
@@ -12,82 +51,85 @@ def printPuzzle(puzzle):
     print (puzzle[1])
     print (puzzle[2])
 
+##Main function
+def main():      
+    ###Welcome user and get input
+    print("Hello there, welcome to my 8-Puzzle Solver.")
+    print("If you want to use a preset puzzle, enter '1'. If instead you want to create your own, enter '2'.")
+    decision = int(input())
 
-#####Sample puzzles, blank space represented with 0
+    #preset puzzle
+    if (decision == 1):
+        #call function to have user select preset difficulty and then pass that puzzle to algorithm selection
+        presetPuzzle = selectPreset()
+        selectAlgorithm(presetPuzzle)
+    #custom puzzle
+    elif (decision == 2):
+        #Get user input
+        print("Please enter your puzzle below. Use a SPACE as a delimiter for each number. Only valid 8-Puzzles are accepted. Press enter when you are done with each row.")
+        row1 = str(input("First Row: "))
+        row2 = str(input("Second Row: "))
+        row3 = str(input("Third Row: "))
 
-#Solution state
-depth0 = [[1,2,3],
-          [4,5,6],
-          [7,8,0]]
+        #Split strings to get numbers
+        row1 = row1.split(" ", 2)
+        row2 = row2.split(" ", 2)
+        row3 = row3.split(" ", 2)
 
-depth2 = [[1,2,3],
-          [4,5,6],
-          [0,7,8]]
+        #change numbers from str to int
+        row1 = list(map(int, row1))
+        row2 = list(map(int, row2))
+        row3 = list(map(int, row3))
 
-depth4 = [[1,2,3],
-          [5,0,6],
-          [4,7,8]]
+        currPuzzle = [row1, row2, row3]
 
-depth8 = [[1,3,6],
-          [5,0,2],
-          [4,7,8]]
+        #pass created puzzle to algorithm selection
+        selectAlgorithm(currPuzzle)
 
-depth12 = [[1,3,6],
-          [5,0,7],
-          [4,8,2]]
+#Function to prompt user to choose a puzzle difficulty, returns a preset puzzle.
+def selectPreset():
+    difficulty = int(input("Choose a difficulty for your puzzle. Difficulty ranges from 1-8, with 1 being the easiest and 8 the hardest.\n"))
 
-depth16 = [[1,6,7],
-          [5,0,3],
-          [4,8,2]]
+    if (difficulty == 1): 
+        print("You chose 'Baby Stuff' difficulty")
+        return depth2
 
-depth20 = [[7,1,2],
-          [4,8,5],
-          [6,3,0]]
+    if (difficulty == 2): 
+        print("You chose 'Very Easy' difficulty")
+        return depth4
 
-depth24 = [[0,7,2],
-          [4,6,1],
-          [3,5,8]]
+    if (difficulty == 3): 
+        print("You chose 'Easy' difficulty")
+        return depth8
 
-depth31 = [[8,6,7],
-          [2,5,4],
-          [3,0,1]]
+    if (difficulty == 4): 
+        print("You chose 'Not Too Bad' difficulty")
+        return depth12
 
-          
-###Welcome user and get input
-print("Hello there, welcome to my 8-Puzzle Solver.")
-print("If you want to use a preset puzzle, enter '1'. If instead you want to create your own, enter '2'.")
-decision = int(input())
+    if (difficulty == 5): 
+        print("You chose 'Starting to Sweat' difficulty")
+        return depth16
 
-#preset puzzle
-if (decision == 1):
-    print("Using sample puzzle")
-    currPuzzle = depth2
+    if (difficulty == 6): 
+        print("You chose 'Hard' difficulty")
+        return depth20
 
-    printPuzzle(currPuzzle)
-    print("FIXME")
+    if (difficulty == 7): 
+        print("You chose 'Very Hard' difficulty")
+        return depth24
 
-#custom puzzle
-elif (decision == 2):
-    #Get user input
-    print("Please enter your puzzle below. Use a SPACE as a delimiter for each number. Only valid 8-Puzzles are accepted. Press enter when you are done with each row.")
-    row1 = str(input("First Row: "))
-    row2 = str(input("Second Row: "))
-    row3 = str(input("Third Row: "))
+    if (difficulty == 8): 
+        print("You chose 'Yikes! Good Luck!' difficulty")
+        return depth31
 
-    #Split strings to get numbers
-    row1 = row1.split(" ", 2)
-    row2 = row2.split(" ", 2)
-    row3 = row3.split(" ", 2)
+#Function to select which algorithm willl be used to solve the puzzle
+def selectAlgorithm(puzzle):
+    print ("Selecting algorithm to solve puzzle:")
+    printPuzzle(puzzle)
 
-    #change numbers from str to int
-    row1 = list(map(int, row1))
-    row2 = list(map(int, row2))
-    row3 = list(map(int, row3))
 
-    currPuzzle = [row1, row2, row3]
-
-    printPuzzle(currPuzzle)
-    print("FIXME")
+###RUN program
+main()
 
 
 
