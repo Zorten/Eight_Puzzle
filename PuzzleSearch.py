@@ -4,7 +4,7 @@
 ### A* with Misplaced Tile Heuristic.
 ### A* with Manhattan Distance Heuristic.
 
-from queue import PriorityQueue
+from queue import Empty, PriorityQueue
 from turtle import position
 #####Sample puzzles, blank space represented with 0
 #Solution state
@@ -44,6 +44,12 @@ depth31 = [[8,6,7],
           [2,5,4],
           [3,0,1]]
 
+#####Coordinates of the puzzle borders in format [row, column]
+upperRow = [[0,0], [0,1], [0,2]]
+bottomRow = [[2,0], [2,1], [2,2]]
+leftCol = [[0,0], [1,0], [2,0]]
+rightCol = [[0,2], [1,2], [2,2]]
+
 #####Classes
 
 ##Class for handling Node objects
@@ -79,6 +85,61 @@ def findBlank(puzzle):
             return position
 
     return None
+
+#####Operators
+##Function to move blank space up
+def goUp(puzzle):
+    blankPos = findBlank(puzzle)
+    if blankPos in upperRow:
+        return None
+
+    row = blankPos[0]
+    col = blankPos[1]
+    puzzle[row][col] = puzzle[row-1][col]
+    puzzle[row-1][col] = 0
+
+    return puzzle
+
+##Function to move blank space down
+def goDown(puzzle):
+    blankPos = findBlank(puzzle)
+    if blankPos in bottomRow:
+        return None
+
+    row = blankPos[0]
+    col = blankPos[1]
+    puzzle[row][col] = puzzle[row+1][col]
+    puzzle[row+1][col] = 0
+
+    return puzzle
+
+##Function to move blank space left
+def goLeft(puzzle):
+    blankPos = findBlank(puzzle)
+    if blankPos in leftCol:
+        return None
+
+    row = blankPos[0]
+    col = blankPos[1]
+    puzzle[row][col] = puzzle[row][col-1]
+    puzzle[row][col-1] = 0
+
+    return puzzle
+
+##Function to move blank space right
+def goRight(puzzle):
+    blankPos = findBlank(puzzle)
+    if blankPos in rightCol:
+        return None
+
+    row = blankPos[0]
+    col = blankPos[1]
+    puzzle[row][col] = puzzle[row][col+1]
+    puzzle[row][col+1] = 0
+
+    return puzzle
+
+
             
 
 ##Main function
@@ -169,14 +230,39 @@ def selectAlgorithm(puzzle):
 
 #Function for Uniform Cost Search algorithm
 def uniformCost(puzzle, heuristic):
-    startNode = Nodes(puzzle, heuristic, 0, None)
+    #Create root node and push to queue 
+    initNode = Nodes(puzzle, heuristic, 1, None)
     workingQueue = PriorityQueue()
-    workingQueue.put((1, startNode))
-    item = workingQueue.get()
-    printPuzzle(item[1].puzzle)
-    print ("Position of blank space: ")
-    position = findBlank(item[1].puzzle)
-    print(position)
+    workingQueue.put((initNode.cost, initNode))
+
+    #initializing stuff
+    repeated = dict()
+    nodesExpanded = 0
+    maxQueue = 0
+
+    #Loop as long as there are nodes in workingQueue
+    while not workingQueue.empty():
+        currNode = workingQueue.get()
+
+        #if the current node is goal state then return it
+        if (currNode[1].puzzle == depth0):
+            return currNode
+
+        #current node not goal state, so create all of its children
+      
+    
+    print("out of loop")
+
+    print("Puzzle before moving blank right:")
+    printPuzzle(puzzle)
+
+    print("Puzzle after moving blank right:")
+    puzzle = goRight(puzzle)
+    printPuzzle(puzzle)
+
+    
+
+
 
 def misplacedTile(puzzle, heuristic):
     print("FIXME")
