@@ -42,6 +42,12 @@ depth31 = [[8,6,7],
           [2,5,4],
           [3,0,1]]
 
+#####Class
+class Nodes:
+    def __init__(self, puzzle, depth, cost):
+        self.puzzle = puzzle
+        self.depth = depth
+        self.cost = cost
 
 #####Functions
 
@@ -124,8 +130,27 @@ def selectPreset():
 
 #Function to select which algorithm willl be used to solve the puzzle
 def selectAlgorithm(puzzle):
-    print ("Selecting algorithm to solve puzzle:")
-    printPuzzle(puzzle)
+    algorithm = int(input("Choose algorithm to solve puzzle. \n (1): Uniform Cost Search \n (2): A* with Misplaced Tile Heuristic \n (3): A* with Manhattan Distance Heuristic \n"))
+    
+    if (algorithm == 1):
+        #UCS
+        uniformCost(puzzle, 0)
+    
+    if (algorithm == 2):
+        #Misplaced tile
+        print("FIXME")
+    if (algorithm == 3):
+        #Manhattan
+        print("FIXME")
+
+def uniformCost(puzzle, heuristic):
+    print("FIXME")
+
+def misplacedTile(puzzle, heuristic):
+    print("FIXME")
+
+def manhattan(puzzle, heuristic):
+    print("FIXME")
 
 
 ###RUN program
