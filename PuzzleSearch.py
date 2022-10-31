@@ -4,6 +4,7 @@
 ### A* with Misplaced Tile Heuristic.
 ### A* with Manhattan Distance Heuristic.
 
+from queue import PriorityQueue
 #####Sample puzzles, blank space represented with 0
 #Solution state
 depth0 = [[1,2,3],
@@ -42,12 +43,16 @@ depth31 = [[8,6,7],
           [2,5,4],
           [3,0,1]]
 
-#####Class
+#####Classes
+
+##Class for handling Node objects
 class Nodes:
-    def __init__(self, puzzle, depth, cost):
+    def __init__(self, puzzle, depth, cost, parent):
         self.puzzle = puzzle
         self.depth = depth
         self.cost = cost
+        self.parent = parent
+
 
 #####Functions
 
@@ -143,8 +148,13 @@ def selectAlgorithm(puzzle):
         #Manhattan
         print("FIXME")
 
+#Function for Uniform Cost Search algorithm
 def uniformCost(puzzle, heuristic):
-    print("FIXME")
+    startNode = Nodes(puzzle, heuristic, 0)
+    workingQueue = PriorityQueue()
+    workingQueue.put((1, startNode))
+    item = workingQueue.get()
+    printPuzzle(item[1].puzzle)
 
 def misplacedTile(puzzle, heuristic):
     print("FIXME")
