@@ -8,7 +8,7 @@ from queue import Empty, PriorityQueue
 from turtle import position
 #####Sample puzzles, blank space represented with 0
 #Solution state
-depth0 = [[1,2,3],
+goal = [[1,2,3],
           [4,5,6],
           [7,8,0]]
 #Baby Stuff
@@ -139,7 +139,10 @@ def goRight(puzzle):
 
     return puzzle
 
-
+##List of tuples to iterate over operators
+# operators = []
+# arg = ["puzzle"]
+# operators.append(lambda:goUp(*arg))
             
 
 ##Main function
@@ -245,21 +248,56 @@ def uniformCost(puzzle, heuristic):
         currNode = workingQueue.get()
 
         #if the current node is goal state then return it
-        if (currNode[1].puzzle == depth0):
+        if (currNode[1].puzzle == goal):
+            print("Reached goal state")
             return currNode
 
-        #current node not goal state, so create all of its children
-      
+        ##Expand children
+
+        #print current puzzle
+        print("Original puzzle")
+        printPuzzle(currNode[1].puzzle)
+
+        #move blank space up
+        upPuzzle = goUp(currNode[1].puzzle)
+        rightPuzzle = goRight(currNode[1].puzzle)
+        
+
+
+        #create new Node with new puzzle, updated depth, cost, and parent
+        upNode = Nodes(upPuzzle, currNode[1].depth+1, 1, currNode)
+
+        #downNode = Nodes(goDown(currNode[1].puzzle), currNode[1].depth+1, 1, currNode)
+        # leftNode = Nodes(goLeft(puzzle), currNode[1].depth+1, 1, currNode)
+        rightNode = Nodes(rightPuzzle, currNode[1].depth+1, 1, currNode)
+        
+        print("Up puzzle:")
+        printPuzzle(upNode.puzzle)
+
+        print("right puzzle:")
+        printPuzzle(rightNode.puzzle)
+        #possibleNodes = [upNode]
+        
+        #Updated puzzles
+        #for item in possibleNodes:
+        #     if item.puzzle:
+        #         #workingQueue.put((item.cost, item))
+        #         nodesExpanded = nodesExpanded + 1
+        #    printPuzzle(item.puzzle)
+
+        # print(nodesExpanded)
+
+        # print("About to print expanded nodes after first run")
+        # while not workingQueue.empty():
+        #     newNode = workingQueue.get()
+        #     printPuzzle(newNode[1].puzzle)
+            
+
+        
     
     print("out of loop")
 
-    print("Puzzle before moving blank right:")
-    printPuzzle(puzzle)
-
-    print("Puzzle after moving blank right:")
-    puzzle = goRight(puzzle)
-    printPuzzle(puzzle)
-
+    
     
 
 
