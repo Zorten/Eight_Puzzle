@@ -108,8 +108,6 @@ def goDown(puzzle):
     newPuzzle = copy.deepcopy(puzzle)
     blankPos = findBlank(newPuzzle)
     if blankPos in bottomRow:
-        print("In down func. Blank was in bottomRow, returning None")
-        #return [[-1], [-1], [-1]]
         return None
 
     row = blankPos[0]
@@ -245,10 +243,12 @@ def selectAlgorithm(puzzle):
 
 #Function for Uniform Cost Search algorithm
 def uniformCost(puzzle, heuristic):
+    priority = 1
     #Create root node and push to queue 
     initNode = Nodes(puzzle, heuristic, 1, None)
     workingQueue = PriorityQueue()
-    workingQueue.put((initNode))
+    workingQueue.put((priority, initNode))
+    priority+= 1
     #initializing stuff
     repeated = dict()
     nodesExpanded = 0
@@ -256,38 +256,55 @@ def uniformCost(puzzle, heuristic):
 
     #Loop as long as there are nodes in workingQueue
     while not workingQueue.empty():
+        #Get Node at top of queue
         currNode = workingQueue.get()
+        #Get puzzle state and depth of current Node
+        currPuzzle = currNode[1].puzzle
+        currDepth = currNode[1].depth
 
         #if the current node is goal state then return it
-        if (currNode.puzzle == goal):
+        if (currPuzzle == goal):
             print("Reached goal state")
             return currNode
 
         ##Expand children
+        #Get possible puzzles
+        upPuzzle = goUp(currPuzzle)
+        downPuzzle = goDown(currPuzzle)
+        leftPuzzle = goLeft(currPuzzle)
+        rihgtPuzzle = goRight(currPuzzle)
 
-        # print("Down puzzle before")
-        # print(currNode.puzzle)
+        #If move was possible, create children nodes
+        if upPuzzle:
+            upNode = Nodes(goUp(currPuzzle), currDepth+1, 1, currNode)
+            print("Created upNode")
+            workingQueue.put((priority, upNode))
+            priority+= 1
+            print("Added upNode to Queue")
 
-        # downPuzzle = goDown(currNode.puzzle)
+        if downPuzzle:
+            downNode = Nodes(goDown(currPuzzle), currDepth+1, 1, currNode)
+            print("Created downNode")
+            workingQueue.put((priority, downNode))
+            priority+= 1
+            print("Added downNode to Queue")
 
-        # print ("Down puzzle after:")
-        # print(downPuzzle)
+        if leftPuzzle:   
+            leftNode = Nodes(goLeft(currPuzzle), currDepth+1, 1, currNode)
+            print("Created leftNode")
+            workingQueue.put((priority, leftNode))
+            priority+= 1
+            print("Added leftNode to Queue")
 
-        currPuzzle = currNode.puzzle
-        upNode = Nodes(goUp(currPuzzle), currNode.depth+1, 1, currNode)
-        #downNode = Nodes(goDown(currPuzzle), currNode.depth+1, 1, currNode)
-       # leftNode = Nodes(goLeft(currPuzzle), currNode.depth+1, 1, currNode)
-        rightNode = Nodes(goRight(currPuzzle), currNode.depth+1, 1, currNode)
+        if rihgtPuzzle:
+            rightNode = Nodes(goRight(currPuzzle), currDepth+1, 1, currNode)
+            print("Created rightNode")
+            workingQueue.put((priority, rightNode))
+            priority+= 1
+            print("Added rightNode to Queue")
 
-        print("Upnode:")
-        print(upNode)
-        print("Rightnode:")
-        print(rightNode)
 
-        if upNode.puzzle:
-            #printPuzzle(upNode.puzzle)
-            workingQueue.put((upNode))
-            nodesExpanded = nodesExpanded + 1
+        
 
         # try:
         #     validPuzzle = downNode.puzzle[0].index(-1)
@@ -304,9 +321,9 @@ def uniformCost(puzzle, heuristic):
         #     workingQueue.put((leftNode))
         #     nodesExpanded = nodesExpanded + 1
 
-        if rightNode.puzzle:
-            workingQueue.put((rightNode))
-            nodesExpanded = nodesExpanded + 1
+        # if rightNode.puzzle:
+        #     workingQueue.put((rightNode))
+        #     nodesExpanded = nodesExpanded + 1
             
         
         # possibleNodes = [upNode, downNode, leftNode, rightNode]
