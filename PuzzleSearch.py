@@ -5,7 +5,9 @@
 ### A* with Manhattan Distance Heuristic.
 
 from queue import Empty, PriorityQueue
-from turtle import position
+from turtle import down, position
+import copy
+from types import NoneType
 #####Sample puzzles, blank space represented with 0
 #Solution state
 goal = [[1,2,3],
@@ -89,55 +91,61 @@ def findBlank(puzzle):
 #####Operators
 ##Function to move blank space up
 def goUp(puzzle):
-    blankPos = findBlank(puzzle)
+    newPuzzle = copy.deepcopy(puzzle)
+    blankPos = findBlank(newPuzzle)
     if blankPos in upperRow:
         return None
 
     row = blankPos[0]
     col = blankPos[1]
-    puzzle[row][col] = puzzle[row-1][col]
-    puzzle[row-1][col] = 0
+    newPuzzle[row][col] = newPuzzle[row-1][col]
+    newPuzzle[row-1][col] = 0
 
-    return puzzle
+    return newPuzzle
 
 ##Function to move blank space down
 def goDown(puzzle):
-    blankPos = findBlank(puzzle)
+    newPuzzle = copy.deepcopy(puzzle)
+    blankPos = findBlank(newPuzzle)
     if blankPos in bottomRow:
+        print("In down func. Blank was in bottomRow, returning None")
+        #return [[-1], [-1], [-1]]
         return None
 
     row = blankPos[0]
     col = blankPos[1]
-    puzzle[row][col] = puzzle[row+1][col]
-    puzzle[row+1][col] = 0
+    newPuzzle[row][col] = newPuzzle[row+1][col]
+    newPuzzle[row+1][col] = 0
 
-    return puzzle
+    return newPuzzle
 
 ##Function to move blank space left
 def goLeft(puzzle):
-    blankPos = findBlank(puzzle)
+    newPuzzle = copy.deepcopy(puzzle)
+    blankPos = findBlank(newPuzzle)
     if blankPos in leftCol:
         return None
 
     row = blankPos[0]
     col = blankPos[1]
-    puzzle[row][col] = puzzle[row][col-1]
-    puzzle[row][col-1] = 0
+    newPuzzle[row][col] = newPuzzle[row][col-1]
+    newPuzzle[row][col-1] = 0
 
-    return puzzle
+    return newPuzzle
 
 ##Function to move blank space right
 def goRight(puzzle):
-    blankPos = findBlank(puzzle)
+    newPuzzle = copy.deepcopy(puzzle)
+    blankPos = findBlank(newPuzzle)
     if blankPos in rightCol:
         return None
 
     row = blankPos[0]
     col = blankPos[1]
-    puzzle[row][col] = puzzle[row][col+1]
-    puzzle[row][col+1] = 0
+    newPuzzle[row][col] = newPuzzle[row][col+1]
+    newPuzzle[row][col+1] = 0
 
-    return puzzle
+    return newPuzzle
 
 ##List of tuples to iterate over operators
 # operators = []
@@ -183,6 +191,10 @@ def main():
 #Function to prompt user to choose a puzzle difficulty, returns a preset puzzle.
 def selectPreset():
     difficulty = int(input("Choose a difficulty for your puzzle. Difficulty ranges from 1-8, with 1 being the easiest and 8 the hardest.\n"))
+
+    if (difficulty == 0):
+        print("You chose the solution")
+        return goal
 
     if (difficulty == 1): 
         print("You chose 'Baby Stuff' difficulty")
@@ -236,8 +248,7 @@ def uniformCost(puzzle, heuristic):
     #Create root node and push to queue 
     initNode = Nodes(puzzle, heuristic, 1, None)
     workingQueue = PriorityQueue()
-    workingQueue.put((initNode.cost, initNode))
-
+    workingQueue.put((initNode))
     #initializing stuff
     repeated = dict()
     nodesExpanded = 0
@@ -248,42 +259,66 @@ def uniformCost(puzzle, heuristic):
         currNode = workingQueue.get()
 
         #if the current node is goal state then return it
-        if (currNode[1].puzzle == goal):
+        if (currNode.puzzle == goal):
             print("Reached goal state")
             return currNode
 
         ##Expand children
 
-        #print current puzzle
-        print("Original puzzle")
-        printPuzzle(currNode[1].puzzle)
+        # print("Down puzzle before")
+        # print(currNode.puzzle)
 
-        #move blank space up
-        upPuzzle = goUp(currNode[1].puzzle)
-        rightPuzzle = goRight(currNode[1].puzzle)
+        # downPuzzle = goDown(currNode.puzzle)
+
+        # print ("Down puzzle after:")
+        # print(downPuzzle)
+
+        currPuzzle = currNode.puzzle
+        upNode = Nodes(goUp(currPuzzle), currNode.depth+1, 1, currNode)
+        #downNode = Nodes(goDown(currPuzzle), currNode.depth+1, 1, currNode)
+       # leftNode = Nodes(goLeft(currPuzzle), currNode.depth+1, 1, currNode)
+        rightNode = Nodes(goRight(currPuzzle), currNode.depth+1, 1, currNode)
+
+        print("Upnode:")
+        print(upNode)
+        print("Rightnode:")
+        print(rightNode)
+
+        if upNode.puzzle:
+            #printPuzzle(upNode.puzzle)
+            workingQueue.put((upNode))
+            nodesExpanded = nodesExpanded + 1
+
+        # try:
+        #     validPuzzle = downNode.puzzle[0].index(-1)
+        # except:
+        #     validPuzzle = -1
+
+        # if (validPuzzle == -1):
+        #     print("In downnode")
+        #     printPuzzle(downNode.puzzle)
+        #     #workingQueue.put((downNode))
+        #     nodesExpanded = nodesExpanded + 1
+
+        # if leftNode.puzzle:
+        #     workingQueue.put((leftNode))
+        #     nodesExpanded = nodesExpanded + 1
+
+        if rightNode.puzzle:
+            workingQueue.put((rightNode))
+            nodesExpanded = nodesExpanded + 1
+            
         
-
-
-        #create new Node with new puzzle, updated depth, cost, and parent
-        upNode = Nodes(upPuzzle, currNode[1].depth+1, 1, currNode)
-
-        #downNode = Nodes(goDown(currNode[1].puzzle), currNode[1].depth+1, 1, currNode)
-        # leftNode = Nodes(goLeft(puzzle), currNode[1].depth+1, 1, currNode)
-        rightNode = Nodes(rightPuzzle, currNode[1].depth+1, 1, currNode)
+        # possibleNodes = [upNode, downNode, leftNode, rightNode]
         
-        print("Up puzzle:")
-        printPuzzle(upNode.puzzle)
-
-        print("right puzzle:")
-        printPuzzle(rightNode.puzzle)
-        #possibleNodes = [upNode]
-        
-        #Updated puzzles
-        #for item in possibleNodes:
+        # print("Nodes expanded: ")
+        # for item in possibleNodes:
         #     if item.puzzle:
-        #         #workingQueue.put((item.cost, item))
         #         nodesExpanded = nodesExpanded + 1
-        #    printPuzzle(item.puzzle)
+        #         #workingQueue.put((item))
+        #         printPuzzle(item.puzzle)
+        #     else:
+        #         del item
 
         # print(nodesExpanded)
 
