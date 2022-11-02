@@ -4,8 +4,9 @@
 ### A* with Misplaced Tile Heuristic.
 ### A* with Manhattan Distance Heuristic.
 
+from inspect import getcallargs
 from queue import Empty, PriorityQueue
-from turtle import down, position
+from turtle import down, position, pu
 import copy
 from types import NoneType
 import time
@@ -64,6 +65,21 @@ class Nodes:
         self.cost = cost
         self.parent = parent
 
+    #comparison operator in order to properly sort queue by priorities: cost or depth
+    def __lt__(self, other):
+        if (self.cost < other.cost):
+            return True
+        elif (self.cost > other.cost):
+            return False
+        else:
+            if (self.depth < other.depth):
+                return True
+            elif (self.depth > other.depth):
+                return False
+            
+        
+        
+
     #function to convert puzzle from lists to tuple
     def turnTupple(self):
         copyPuzzle = copy.deepcopy(self.puzzle)
@@ -81,13 +97,21 @@ def printPuzzle(puzzle):
     print (puzzle[2])
     print ("\n")
 
-##Function to print solution path for testing purposes
+##Functions to print solution paths for testing purposes
+#Needed separate function for UCS because of the way the priority queue is constructed
+def solPathUCS(initNode):
+    if initNode == None:
+        return
+
+    solPathUCS(initNode.parent)
+    printPuzzle(initNode.puzzle)
+
 def solPath(initNode):
     if initNode == None:
         return
 
-    solPath(initNode[1].parent)
-    printPuzzle(initNode[1].puzzle)
+    solPath(initNode[2].parent)
+    printPuzzle(initNode[2].puzzle)
 
 ##Function to find blank space in puzzle
 ##returns the position of blank space as a list [row, column]
@@ -265,22 +289,16 @@ def uniformCost(puzzle, heuristic):
     printPuzzle(puzzle)
 
     #hardcode h(n) to be zero
-    h_n = heuristic
+    hVal = heuristic
     #keep track of total number of nodes expanded
     nodesExpanded = 0
     #keep track of the maximum size of the queue
     maxQueue = 0
     
-    #Create root node and push to queue 
-    initNode = Nodes(puzzle, 0, 0, None)
-    #PriorityQueue requires a unique priority value to be set. Lower values = higher priority
-    #Since all the nodes have the same cost, they all have the same priority
-    #Thus I have a priority var that I increase each time I add to the queue
-    #In this way, nodes are enqueued in a FIFO manner
-    priority = 1
+    #Create root node and push to queue. Since all nodes have same cost, no priority given. 
+    initNode = Nodes(puzzle, 0, hVal, None)
     workingQueue = PriorityQueue()
-    workingQueue.put((priority, initNode))
-    priority+= 1
+    workingQueue.put((initNode))
 
     #Initializing dictonary to detect duplicate states and add initial puzzle
     repeatDict = dict()
@@ -294,23 +312,37 @@ def uniformCost(puzzle, heuristic):
         #Get Node at top of queue
         currNode = workingQueue.get()
         #Get puzzle state and depth of current Node
-        currPuzzle = currNode[1].puzzle
-        currDepth = currNode[1].depth
+        currPuzzle = currNode.puzzle
+        currDepth = currNode.depth
+
+        #Print puzzle that was just expanded, except for root
+        if (not workingQueue.empty()):
+            nodesExpanded+= 1
+            print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode.cost - currDepth)  )
+            printPuzzle(currPuzzle) 
 
         #if the current node is goal state then return it and print metrics
         if (currPuzzle == goal):
             totalTime = time.time() - startTime
-            totalTime = round(totalTime, 1)
             print("Reached goal state!")
-            #print("Here's the solution path:")
-            #solPath(currNode)
-            print("Solution Depth: " + str(currNode[1].depth))
+            print("Here's the solution path:")
+            solPathUCS(currNode)
+            print("Solution Depth: " + str(currDepth))
             print("Total Nodes Expanded: " + str(nodesExpanded))
             print("Max Queue Size: " + str(maxQueue))
-            if (totalTime < 1):
-                print("Time elapsed: < 1 second")
-            else:
+            #Print out time elapsed
+            if (totalTime >= 60):
+                totalTime = totalTime / 60
+                totalTime = round(totalTime, 1)
+                print("Time elapsed: " + str(totalTime) + " minutes")
+            elif (totalTime >= 1):
+                totalTime = round(totalTime, 1)
                 print("Time elapsed: " + str(totalTime) + " seconds")
+            else:
+                totalTime = totalTime * 1000
+                totalTime = round(totalTime)
+                print("Time elapsed: " + str(totalTime) + " milliseconds")
+
             return currNode
 
         ##Expand children
@@ -334,19 +366,123 @@ def uniformCost(puzzle, heuristic):
                 else:
                     #if puzzle is unseen one, add it to dictionary and put Node in queue
                     repeatDict[tupPuzzle] = "Unseen puzzle"
-                    nodesExpanded+= 1
-                    workingQueue.put((priority, newNode))
-                    priority+= 1
-                    print("The best state to expand with a g(n) = " + str(newNode.depth) + " and h(n) = " + str(h_n) )
-                    printPuzzle(newNode.puzzle)      
+                    workingQueue.put((newNode))     
 
-
+#####Function for A* with Misplaced Tile Heuristic
 def misplacedTile(puzzle, heuristic):
-    print("FIXME")
+    #Begin timer to track time elapsed 
+    startTime = time.time()
+
+    #Print out puzzle we are trying to solve
+    print("Initial puzzle: ")
+    printPuzzle(puzzle)
+
+    #keep track of total number of nodes expanded
+    nodesExpanded = 0
+    #keep track of the maximum size of the queue
+    maxQueue = 0
+    
+    #Create root node and push to queue 
+    initNode = Nodes(puzzle, 0, 0, None)
+    workingQueue = PriorityQueue()
+    #using cost as first priority value: the lower the cost the higher the priority
+    #using depth as second priority value: if costs are equal, then priority will be based on the lowest depth value.
+    workingQueue.put((initNode.cost, initNode.depth, initNode))
+    
+    #Initializing dictonary to detect duplicate states and add initial puzzle
+    repeatDict = dict()
+    repeatDict[initNode.turnTupple()] = "Root board"
+
+
+    #Loop as long as there are nodes in workingQueue
+    while not workingQueue.empty():
+        #Update maximum queue if queue has increased
+        maxQueue = max(maxQueue, workingQueue.qsize())
+        #Get Node at top of queue
+        currNode = workingQueue.get()
+        #Get puzzle state and depth of current Node
+        currPuzzle = currNode[2].puzzle
+        currDepth = currNode[2].depth
+
+        if (not workingQueue.empty()):
+            nodesExpanded+= 1
+            print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode[2].cost - currDepth)  )
+            printPuzzle(currPuzzle) 
+
+        #if the current node is goal state then return it and print metrics
+        if (currPuzzle == goal):
+            totalTime = time.time() - startTime
+            print("Reached goal state!")
+            print("Here's the solution path:")
+            solPath(currNode)
+            print("Solution Depth: " + str(currNode[2].depth))
+            print("Total Nodes Expanded: " + str(nodesExpanded))
+            print("Max Queue Size: " + str(maxQueue))
+            #Print out time elapsed
+            if (totalTime >= 60):
+                totalTime = totalTime / 60
+                totalTime = round(totalTime, 1)
+                print("Time elapsed: " + str(totalTime) + " minutes")
+            elif (totalTime >= 1):
+                totalTime = round(totalTime, 1)
+                print("Time elapsed: " + str(totalTime) + " seconds")
+            else:
+                totalTime = totalTime * 1000
+                totalTime = round(totalTime, 1)
+                print("Time elapsed: " + str(totalTime) + " milliseconds")
+
+            return currNode
+
+        ##Expand children
+        #Get possible puzzles and store them in list
+        upPuzzle = goUp(currPuzzle)
+        leftPuzzle = goLeft(currPuzzle)
+        rightPuzzle = goRight(currPuzzle)
+        downPuzzle = goDown(currPuzzle)
+        possibleMoves = [rightPuzzle, leftPuzzle, upPuzzle, downPuzzle]
+
+        #iterate over list
+        for puzzle in possibleMoves:
+            #if the move was valid, expand new child Node
+            if puzzle:
+                hVal = getCosts(puzzle, heuristic)
+                #f(n) = g(n) + h(n)
+                nodeCost = (currDepth + 1) + hVal
+                newNode = Nodes(puzzle, currDepth+1, nodeCost, currNode)
+                #turn 2D array puzzle into a tupple
+                tupPuzzle = newNode.turnTupple()
+                #if puzzle is found in dict, it's a duplicate so delete node that was created
+                if (tupPuzzle in repeatDict):
+                    del newNode
+                else:
+                    #if puzzle is unseen one, add it to dictionary and put Node in queue
+                    repeatDict[tupPuzzle] = "Unseen puzzle"
+                    workingQueue.put((newNode.cost, newNode.depth, newNode))
+
+    #Queue empty, out of loop, thus no solution
+    print("Failure, no solution found.")
+    return None  
 
 def manhattan(puzzle, heuristic):
     print("FIXME")
 
+
+#####Function to get heuristic cost h(n)
+def getCosts(puzzle, heuristic):
+    #This is for a 3x3 puzzle. This var can be changed for different nXn puzzles. 
+    puzzleDimension = 3
+
+    if (heuristic == 1):
+        #iterate over each row and column to check all positions
+        hVal = 0
+        for i in range(puzzleDimension):
+            for j in range(puzzleDimension):
+                #If values differ, there's a misplaced tile so increase count, except for the blank
+                if (puzzle[i][j] != goal[i][j] and goal[i][j] != 0):
+                    hVal += 1
+    
+        return hVal
+        
 
 ###RUN program
 main()
