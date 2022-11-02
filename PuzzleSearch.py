@@ -48,6 +48,7 @@ depth31 = [[8,6,7],
           [3,0,1]]
 
 #####Coordinates of the puzzle borders in format [row, column]
+#These are used to check if blank is in the border of the puzzle
 upperRow = [[0,0], [0,1], [0,2]]
 bottomRow = [[2,0], [2,1], [2,2]]
 leftCol = [[0,0], [1,0], [2,0]]
@@ -63,6 +64,7 @@ class Nodes:
         self.cost = cost
         self.parent = parent
 
+    #function to convert puzzle from lists to tuple
     def turnTupple(self):
         copyPuzzle = copy.deepcopy(self.puzzle)
 
@@ -88,7 +90,7 @@ def solPath(initNode):
     printPuzzle(initNode[1].puzzle)
 
 ##Function to find blank space in puzzle
-##returns the position as a list [row, column]
+##returns the position of blank space as a list [row, column]
 def findBlank(puzzle):
     #index each row for the number 0
     for row in puzzle:
@@ -103,14 +105,16 @@ def findBlank(puzzle):
 
     return None
 
-#####Operators
+#####Operators possible on puzzle
 ##Function to move blank space up
 def goUp(puzzle):
     newPuzzle = copy.deepcopy(puzzle)
     blankPos = findBlank(newPuzzle)
+    #if blank is in the border, this move is invalid so return none
     if blankPos in upperRow:
         return None
 
+    #perform move and return new puzzle
     row = blankPos[0]
     col = blankPos[1]
     newPuzzle[row][col] = newPuzzle[row-1][col]
@@ -245,131 +249,96 @@ def selectAlgorithm(puzzle):
     
     if (algorithm == 2):
         #Misplaced tile
-        print("FIXME")
+        misplacedTile(puzzle, 1)
     if (algorithm == 3):
         #Manhattan
+        manhattan(puzzle, 2)
         print("FIXME")
 
-#Function for Uniform Cost Search algorithm
+#####Function for Uniform Cost Search algorithm
 def uniformCost(puzzle, heuristic):
+    #Begin timer to track time elapsed 
     startTime = time.time()
-    priority = 1
+
+    #Print out puzzle we are trying to solve
+    print("Initial puzzle: ")
+    printPuzzle(puzzle)
+
+    #hardcode h(n) to be zero
+    h_n = heuristic
+    #keep track of total number of nodes expanded
+    nodesExpanded = 0
+    #keep track of the maximum size of the queue
+    maxQueue = 0
+    
     #Create root node and push to queue 
-    initNode = Nodes(puzzle, heuristic, 1, None)
+    initNode = Nodes(puzzle, 0, 0, None)
+    #PriorityQueue requires a unique priority value to be set. Lower values = higher priority
+    #Since all the nodes have the same cost, they all have the same priority
+    #Thus I have a priority var that I increase each time I add to the queue
+    #In this way, nodes are enqueued in a FIFO manner
+    priority = 1
     workingQueue = PriorityQueue()
     workingQueue.put((priority, initNode))
     priority+= 1
 
-    print("Initial puzzle: ")
-    printPuzzle(initNode.puzzle)
-
-    #initializing stuff
+    #Initializing dictonary to detect duplicate states and add initial puzzle
     repeatDict = dict()
     repeatDict[initNode.turnTupple()] = "Root board"
-    nodesExpanded = 0
-    maxQueue = 0
+
 
     #Loop as long as there are nodes in workingQueue
     while not workingQueue.empty():
+        #Update maximum queue if queue has increased
+        maxQueue = max(maxQueue, workingQueue.qsize())
         #Get Node at top of queue
         currNode = workingQueue.get()
         #Get puzzle state and depth of current Node
         currPuzzle = currNode[1].puzzle
         currDepth = currNode[1].depth
 
-        #if the current node is goal state then return it
+        #if the current node is goal state then return it and print metrics
         if (currPuzzle == goal):
             totalTime = time.time() - startTime
             totalTime = round(totalTime, 1)
-            print("Reached goal state")
+            print("Reached goal state!")
             #print("Here's the solution path:")
             #solPath(currNode)
-            print("Total Nodes Expanded: " + str(nodesExpanded))
             print("Solution Depth: " + str(currNode[1].depth))
-            print("Time elapsed: " + str(totalTime) + " seconds")
+            print("Total Nodes Expanded: " + str(nodesExpanded))
+            print("Max Queue Size: " + str(maxQueue))
+            if (totalTime < 1):
+                print("Time elapsed: < 1 second")
+            else:
+                print("Time elapsed: " + str(totalTime) + " seconds")
             return currNode
 
         ##Expand children
-        #Get possible puzzles
+        #Get possible puzzles and store them in list
         upPuzzle = goUp(currPuzzle)
         leftPuzzle = goLeft(currPuzzle)
         rightPuzzle = goRight(currPuzzle)
         downPuzzle = goDown(currPuzzle)
+        possibleMoves = [rightPuzzle, leftPuzzle, upPuzzle, downPuzzle]
 
-        #If move was possible, create children nodes
-        if rightPuzzle:
-            rightNode = Nodes(goRight(currPuzzle), currDepth+1, 1, currNode)
-            if (rightNode.turnTupple() in repeatDict):
-                # print("Saw repeat, deleting: ")
-                # printPuzzle(rightNode.puzzle)
-                del rightNode
-            else:
-                repeatDict[rightNode.turnTupple()] = "Unseen puzzle"
-                nodesExpanded+= 1
-                workingQueue.put((priority, rightNode))
-                priority+= 1
-                print("Expanded this puzzle: ")
-                printPuzzle(rightNode.puzzle) 
-                
-        if upPuzzle:
-            upNode = Nodes(goUp(currPuzzle), currDepth+1, 1, currNode)
-            if (upNode.turnTupple() in repeatDict):
-                # print("Saw repeat, deleting: ")
-                # printPuzzle(upNode.puzzle)
-                del upNode
-            else:
-                repeatDict[upNode.turnTupple()] = "Unseen puzzle"
-                nodesExpanded+= 1
-                workingQueue.put((priority, upNode))
-                priority+= 1
-                print("Expanded this puzzle: ")
-                printPuzzle(upNode.puzzle)
-
-        if leftPuzzle:   
-            leftNode = Nodes(goLeft(currPuzzle), currDepth+1, 1, currNode)
-            if (leftNode.turnTupple() in repeatDict):
-                # print("Saw repeat, deleting: ")
-                # printPuzzle(leftNode.puzzle)
-                del leftNode
-            else:
-                repeatDict[leftNode.turnTupple()] = "Unseen puzzle"
-                nodesExpanded+= 1
-                workingQueue.put((priority, leftNode))
-                priority+= 1
-                print("Expanded this puzzle: ")
-                printPuzzle(leftNode.puzzle)
-
-        if rightPuzzle:
-            rightNode = Nodes(goRight(currPuzzle), currDepth+1, 1, currNode)
-            if (rightNode.turnTupple() in repeatDict):
-                # print("Saw repeat, deleting: ")
-                # printPuzzle(rightNode.puzzle)
-                del rightNode
-            else:
-                repeatDict[rightNode.turnTupple()] = "Unseen puzzle"
-                nodesExpanded+= 1
-                workingQueue.put((priority, rightNode))
-                priority+= 1
-                print("Expanded this puzzle: ")
-                printPuzzle(rightNode.puzzle)   
-
-        if downPuzzle:
-            downNode = Nodes(goDown(currPuzzle), currDepth+1, 1, currNode)
-            if (downNode.turnTupple() in repeatDict):
-                # print("Saw repeat, deleting: ")
-                # printPuzzle(downNode.puzzle)
-                del downNode
-            else:
-                repeatDict[downNode.turnTupple()] = "Unseen puzzle"
-                nodesExpanded+= 1
-                workingQueue.put((priority, downNode))
-                priority+= 1
-                print("Expanded this puzzle: ")
-                printPuzzle(downNode.puzzle)      
-
-        
-    
-    print("out of loop")
+        #iterate over list
+        for puzzle in possibleMoves:
+            #if the move was valid, expand new child Node
+            if puzzle:
+                newNode = Nodes(puzzle, currDepth+1, 1, currNode)
+                #turn 2D array puzzle into a tupple
+                tupPuzzle = newNode.turnTupple()
+                #if puzzle is found in dict, it's a duplicate so delete node that was created
+                if (tupPuzzle in repeatDict):
+                    del newNode
+                else:
+                    #if puzzle is unseen one, add it to dictionary and put Node in queue
+                    repeatDict[tupPuzzle] = "Unseen puzzle"
+                    nodesExpanded+= 1
+                    workingQueue.put((priority, newNode))
+                    priority+= 1
+                    print("The best state to expand with a g(n) = " + str(newNode.depth) + " and h(n) = " + str(h_n) )
+                    printPuzzle(newNode.puzzle)      
 
 
 def misplacedTile(puzzle, heuristic):
