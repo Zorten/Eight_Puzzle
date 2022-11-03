@@ -55,9 +55,22 @@ bottomRow = [[2,0], [2,1], [2,2]]
 leftCol = [[0,0], [1,0], [2,0]]
 rightCol = [[0,2], [1,2], [2,2]]
 
-#####Classes
+#####Dictionary that stores the position of all the numbers in the solution board
+###Position  stored as a tupple in (row, column) format
+positionDict = {
+    1 : (0,0),
+    2 : (0,1),
+    3 : (0,2),
+    4 : (1,0),
+    5 : (1,1),
+    6 : (1,1),
+    7 : (2,0),
+    8 : (2,1),
+    0 : (2,2)
+}
 
-##Class for handling Node objects
+
+#####Class for handling Node objects
 class Nodes:
     def __init__(self, puzzle, depth, cost, parent):
         self.puzzle = puzzle
@@ -222,6 +235,7 @@ def main():
 
         #pass created puzzle to algorithm selection
         selectAlgorithm(currPuzzle)
+        
 
 #Function to prompt user to choose a puzzle difficulty, returns a preset puzzle.
 def selectPreset():
@@ -277,7 +291,6 @@ def selectAlgorithm(puzzle):
     if (algorithm == 3):
         #Manhattan
         manhattan(puzzle, 2)
-        print("FIXME")
 
 #####Function for Uniform Cost Search algorithm
 def uniformCost(puzzle, heuristic):
@@ -404,6 +417,7 @@ def misplacedTile(puzzle, heuristic):
         currPuzzle = currNode[2].puzzle
         currDepth = currNode[2].depth
 
+        #Node is expanded when off the queue, so print its g and h values, except for root node
         if (not workingQueue.empty()):
             nodesExpanded+= 1
             print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode[2].cost - currDepth)  )
@@ -464,8 +478,99 @@ def misplacedTile(puzzle, heuristic):
     return None  
 
 def manhattan(puzzle, heuristic):
-    print("FIXME")
+    #Begin timer to track time elapsed 
+    startTime = time.time()
 
+    #Print out puzzle we are trying to solve
+    print("Initial puzzle: ")
+    printPuzzle(puzzle)
+
+    #keep track of total number of nodes expanded
+    nodesExpanded = 0
+    #keep track of the maximum size of the queue
+    maxQueue = 0
+    
+    #Create root node and push to queue 
+    initNode = Nodes(puzzle, 0, 0, None)
+    workingQueue = PriorityQueue()
+    #using cost as first priority value: the lower the cost the higher the priority
+    #using depth as second priority value: if costs are equal, then priority will be based on the lowest depth value.
+    workingQueue.put((initNode.cost, initNode.depth, initNode))
+    
+    #Initializing dictonary to detect duplicate states and add initial puzzle
+    repeatDict = dict()
+    repeatDict[initNode.turnTupple()] = "Root board"
+
+
+    #Loop as long as there are nodes in workingQueue
+    while not workingQueue.empty():
+        #Update maximum queue if queue has increased
+        maxQueue = max(maxQueue, workingQueue.qsize())
+        #Get Node at top of queue
+        currNode = workingQueue.get()
+        #Get puzzle state and depth of current Node
+        currPuzzle = currNode[2].puzzle
+        currDepth = currNode[2].depth
+
+        #Node is expanded when off the queue, so print its g and h values, except for root node
+        if (not workingQueue.empty()):
+            nodesExpanded+= 1
+            print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode[2].cost - currDepth)  )
+            printPuzzle(currPuzzle) 
+
+        #if the current node is goal state then return it and print metrics
+        if (currPuzzle == goal):
+            totalTime = time.time() - startTime
+            print("Reached goal state!")
+            print("Here's the solution path:")
+            solPath(currNode)
+            print("Solution Depth: " + str(currNode[2].depth))
+            print("Total Nodes Expanded: " + str(nodesExpanded))
+            print("Max Queue Size: " + str(maxQueue))
+            #Print out time elapsed
+            if (totalTime >= 60):
+                totalTime = totalTime / 60
+                totalTime = round(totalTime, 1)
+                print("Time elapsed: " + str(totalTime) + " minutes")
+            elif (totalTime >= 1):
+                totalTime = round(totalTime, 1)
+                print("Time elapsed: " + str(totalTime) + " seconds")
+            else:
+                totalTime = totalTime * 1000
+                totalTime = round(totalTime, 1)
+                print("Time elapsed: " + str(totalTime) + " milliseconds")
+
+            return currNode
+
+        ##Expand children
+        #Get possible puzzles and store them in list
+        upPuzzle = goUp(currPuzzle)
+        leftPuzzle = goLeft(currPuzzle)
+        rightPuzzle = goRight(currPuzzle)
+        downPuzzle = goDown(currPuzzle)
+        possibleMoves = [rightPuzzle, leftPuzzle, upPuzzle, downPuzzle]
+
+        #iterate over list
+        for puzzle in possibleMoves:
+            #if the move was valid, expand new child Node
+            if puzzle:
+                hVal = getCosts(puzzle, heuristic)
+                #f(n) = g(n) + h(n)
+                nodeCost = (currDepth + 1) + hVal
+                newNode = Nodes(puzzle, currDepth+1, nodeCost, currNode)
+                #turn 2D array puzzle into a tupple
+                tupPuzzle = newNode.turnTupple()
+                #if puzzle is found in dict, it's a duplicate so delete node that was created
+                if (tupPuzzle in repeatDict):
+                    del newNode
+                else:
+                    #if puzzle is unseen one, add it to dictionary and put Node in queue
+                    repeatDict[tupPuzzle] = "Unseen puzzle"
+                    workingQueue.put((newNode.cost, newNode.depth, newNode))
+
+    #Queue empty, out of loop, thus no solution
+    print("Failure, no solution found.")
+    return None  
 
 #####Function to get heuristic cost h(n)
 def getCosts(puzzle, heuristic):
@@ -482,10 +587,23 @@ def getCosts(puzzle, heuristic):
                     hVal += 1
     
         return hVal
+
+    if (heuristic == 2):
+        #iterate over each row and column to check all positions
+        hVal = 0
+        for i in range(puzzleDimension):
+            for j in range(puzzleDimension):
+                #If values differ, there's a misplaced tile so calculate distance
+                if (puzzle[i][j] != goal[i][j] and puzzle[i][j] != 0):
+                    number = puzzle[i][j]
+                    numPos = positionDict[number]
+                    hDist = abs(numPos[0] - i)
+                    vDist = abs(numPos[1] - j)
+                    manDist = hDist + vDist
+                    hVal += manDist
+    
+        return hVal
         
 
 ###RUN program
 main()
-
-
-
