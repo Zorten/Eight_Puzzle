@@ -4,11 +4,8 @@
 ### A* with Misplaced Tile Heuristic.
 ### A* with Manhattan Distance Heuristic.
 
-from inspect import getcallargs
 from queue import Empty, PriorityQueue
-from turtle import down, position, pu
 import copy
-from types import NoneType
 import time
 #####Sample puzzles, blank space represented with 0
 #Solution state
@@ -283,13 +280,16 @@ def selectAlgorithm(puzzle):
     
     if (algorithm == 1):
         #UCS
+        print("You chose to solve the puzzle with the Uniform Cost Search algorithm")
         uniformCost(puzzle, 0)
     
     if (algorithm == 2):
         #Misplaced tile
+        print("You chose to solve the puzzle with the A* algorithm and the Misplaced Tile heuristic")
         misplacedTile(puzzle, 1)
     if (algorithm == 3):
         #Manhattan
+        print("You chose to solve the puzzle with the A* algorithm and the Manhattan Distance heuristic")
         manhattan(puzzle, 2)
 
 #####Function for Uniform Cost Search algorithm
@@ -300,6 +300,10 @@ def uniformCost(puzzle, heuristic):
     #Print out puzzle we are trying to solve
     print("Initial puzzle: ")
     printPuzzle(puzzle)
+
+    #For testing purposes
+    trace = str(input("Would you like to print out the trace path? [Y/N] "))
+    solution = str(input("Would you like to print out the solution path? [Y/N] "))
 
     #hardcode h(n) to be zero
     hVal = heuristic
@@ -328,22 +332,24 @@ def uniformCost(puzzle, heuristic):
         currPuzzle = currNode.puzzle
         currDepth = currNode.depth
 
-        #Print puzzle that was just expanded, except for root
+        #Update nodes expanded var and print puzzle that was just expanded, except for root
         if (not workingQueue.empty()):
             nodesExpanded+= 1
-            print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode.cost - currDepth)  )
-            printPuzzle(currPuzzle) 
+            if(trace == "Y" or trace == "y"):
+                print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(hVal)  )
+                printPuzzle(currPuzzle) 
 
         #if the current node is goal state then return it and print metrics
         if (currPuzzle == goal):
-            totalTime = time.time() - startTime
             print("Reached goal state!")
-            print("Here's the solution path:")
-            solPathUCS(currNode)
+            if (solution == "Y" or solution == "y"):
+                print("Here's the solution path:")
+                solPathUCS(currNode)
             print("Solution Depth: " + str(currDepth))
             print("Total Nodes Expanded: " + str(nodesExpanded))
             print("Max Queue Size: " + str(maxQueue))
             #Print out time elapsed
+            totalTime = time.time() - startTime
             if (totalTime >= 60):
                 totalTime = totalTime / 60
                 totalTime = round(totalTime, 1)
@@ -379,7 +385,11 @@ def uniformCost(puzzle, heuristic):
                 else:
                     #if puzzle is unseen one, add it to dictionary and put Node in queue
                     repeatDict[tupPuzzle] = "Unseen puzzle"
-                    workingQueue.put((newNode))     
+                    workingQueue.put((newNode)) 
+
+    #Queue empty, out of loop, thus no solution
+    print("Failure, no solution found.")
+    return None      
 
 #####Function for A* with Misplaced Tile Heuristic
 def misplacedTile(puzzle, heuristic):
@@ -389,6 +399,10 @@ def misplacedTile(puzzle, heuristic):
     #Print out puzzle we are trying to solve
     print("Initial puzzle: ")
     printPuzzle(puzzle)
+
+    #For testing purposes
+    trace = str(input("Would you like to print out the trace path? [Y/N] "))
+    solution = str(input("Would you like to print out the solution path? [Y/N] "))
 
     #keep track of total number of nodes expanded
     nodesExpanded = 0
@@ -420,19 +434,21 @@ def misplacedTile(puzzle, heuristic):
         #Node is expanded when off the queue, so print its g and h values, except for root node
         if (not workingQueue.empty()):
             nodesExpanded+= 1
-            print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode[2].cost - currDepth)  )
-            printPuzzle(currPuzzle) 
+            if(trace == "Y" or trace == "y"):
+                print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode[2].cost - currDepth)  )
+                printPuzzle(currPuzzle) 
 
         #if the current node is goal state then return it and print metrics
         if (currPuzzle == goal):
-            totalTime = time.time() - startTime
             print("Reached goal state!")
-            print("Here's the solution path:")
-            solPath(currNode)
+            if(solution == "Y" or solution == "y"):
+                print("Here's the solution path:")
+                solPath(currNode)
             print("Solution Depth: " + str(currNode[2].depth))
             print("Total Nodes Expanded: " + str(nodesExpanded))
             print("Max Queue Size: " + str(maxQueue))
             #Print out time elapsed
+            totalTime = time.time() - startTime
             if (totalTime >= 60):
                 totalTime = totalTime / 60
                 totalTime = round(totalTime, 1)
@@ -485,6 +501,10 @@ def manhattan(puzzle, heuristic):
     print("Initial puzzle: ")
     printPuzzle(puzzle)
 
+    #For testing purposes
+    trace = str(input("Would you like to print out the trace path? [Y/N] "))
+    solution = str(input("Would you like to print out the solution path? [Y/N] "))
+
     #keep track of total number of nodes expanded
     nodesExpanded = 0
     #keep track of the maximum size of the queue
@@ -512,22 +532,24 @@ def manhattan(puzzle, heuristic):
         currPuzzle = currNode[2].puzzle
         currDepth = currNode[2].depth
 
-        #Node is expanded when off the queue, so print its g and h values, except for root node
+        # #Node is expanded when off the queue, so print its g and h values, except for root node
         if (not workingQueue.empty()):
             nodesExpanded+= 1
-            print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode[2].cost - currDepth)  )
-            printPuzzle(currPuzzle) 
+            if(trace == "Y" or trace == "y"):
+                print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode[2].cost - currDepth)  )
+                printPuzzle(currPuzzle) 
 
         #if the current node is goal state then return it and print metrics
         if (currPuzzle == goal):
-            totalTime = time.time() - startTime
             print("Reached goal state!")
-            print("Here's the solution path:")
-            solPath(currNode)
+            if(solution == "Y" or solution == "y"):
+                print("Here's the solution path:")
+                solPath(currNode)
             print("Solution Depth: " + str(currNode[2].depth))
             print("Total Nodes Expanded: " + str(nodesExpanded))
             print("Max Queue Size: " + str(maxQueue))
             #Print out time elapsed
+            totalTime = time.time() - startTime
             if (totalTime >= 60):
                 totalTime = totalTime / 60
                 totalTime = round(totalTime, 1)
