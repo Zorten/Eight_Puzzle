@@ -286,11 +286,11 @@ def selectAlgorithm(puzzle):
     if (algorithm == 2):
         #Misplaced tile
         print("You chose to solve the puzzle with the A* algorithm and the Misplaced Tile heuristic")
-        misplacedTile(puzzle, 1)
+        a_star(puzzle, 1)
     if (algorithm == 3):
         #Manhattan
         print("You chose to solve the puzzle with the A* algorithm and the Manhattan Distance heuristic")
-        manhattan(puzzle, 2)
+        a_star(puzzle, 2)
 
 #####Function for Uniform Cost Search algorithm
 def uniformCost(puzzle, heuristic):
@@ -392,9 +392,9 @@ def uniformCost(puzzle, heuristic):
     return None      
 
 #####Function for A* with Misplaced Tile Heuristic
-def misplacedTile(puzzle, heuristic):
+def a_star(puzzle, heuristic):
     #Begin timer to track time elapsed 
-    startTime = time.time()
+    startTime = time.perf_counter()
 
     #Print out puzzle we are trying to solve
     print("Initial puzzle: ")
@@ -448,108 +448,7 @@ def misplacedTile(puzzle, heuristic):
             print("Total Nodes Expanded: " + str(nodesExpanded))
             print("Max Queue Size: " + str(maxQueue))
             #Print out time elapsed
-            totalTime = time.time() - startTime
-            if (totalTime >= 60):
-                totalTime = totalTime / 60
-                totalTime = round(totalTime, 1)
-                print("Time elapsed: " + str(totalTime) + " minutes")
-            elif (totalTime >= 1):
-                totalTime = round(totalTime, 1)
-                print("Time elapsed: " + str(totalTime) + " seconds")
-            else:
-                totalTime = totalTime * 1000
-                totalTime = round(totalTime, 1)
-                print("Time elapsed: " + str(totalTime) + " milliseconds")
-
-            return currNode
-
-        ##Expand children
-        #Get possible puzzles and store them in list
-        upPuzzle = goUp(currPuzzle)
-        leftPuzzle = goLeft(currPuzzle)
-        rightPuzzle = goRight(currPuzzle)
-        downPuzzle = goDown(currPuzzle)
-        possibleMoves = [rightPuzzle, leftPuzzle, upPuzzle, downPuzzle]
-
-        #iterate over list
-        for puzzle in possibleMoves:
-            #if the move was valid, expand new child Node
-            if puzzle:
-                hVal = getCosts(puzzle, heuristic)
-                #f(n) = g(n) + h(n)
-                nodeCost = (currDepth + 1) + hVal
-                newNode = Nodes(puzzle, currDepth+1, nodeCost, currNode)
-                #turn 2D array puzzle into a tupple
-                tupPuzzle = newNode.turnTupple()
-                #if puzzle is found in dict, it's a duplicate so delete node that was created
-                if (tupPuzzle in repeatDict):
-                    del newNode
-                else:
-                    #if puzzle is unseen one, add it to dictionary and put Node in queue
-                    repeatDict[tupPuzzle] = "Unseen puzzle"
-                    workingQueue.put((newNode.cost, newNode.depth, newNode))
-
-    #Queue empty, out of loop, thus no solution
-    print("Failure, no solution found.")
-    return None  
-
-def manhattan(puzzle, heuristic):
-    #Begin timer to track time elapsed 
-    startTime = time.time()
-
-    #Print out puzzle we are trying to solve
-    print("Initial puzzle: ")
-    printPuzzle(puzzle)
-
-    #For testing purposes
-    trace = str(input("Would you like to print out the trace path? [Y/N] "))
-    solution = str(input("Would you like to print out the solution path? [Y/N] "))
-
-    #keep track of total number of nodes expanded
-    nodesExpanded = 0
-    #keep track of the maximum size of the queue
-    maxQueue = 0
-    
-    #Create root node and push to queue 
-    initNode = Nodes(puzzle, 0, 0, None)
-    workingQueue = PriorityQueue()
-    #using cost as first priority value: the lower the cost the higher the priority
-    #using depth as second priority value: if costs are equal, then priority will be based on the lowest depth value.
-    workingQueue.put((initNode.cost, initNode.depth, initNode))
-    
-    #Initializing dictonary to detect duplicate states and add initial puzzle
-    repeatDict = dict()
-    repeatDict[initNode.turnTupple()] = "Root board"
-
-
-    #Loop as long as there are nodes in workingQueue
-    while not workingQueue.empty():
-        #Update maximum queue if queue has increased
-        maxQueue = max(maxQueue, workingQueue.qsize())
-        #Get Node at top of queue
-        currNode = workingQueue.get()
-        #Get puzzle state and depth of current Node
-        currPuzzle = currNode[2].puzzle
-        currDepth = currNode[2].depth
-
-        # #Node is expanded when off the queue, so print its g and h values, except for root node
-        if (not workingQueue.empty()):
-            nodesExpanded+= 1
-            if(trace == "Y" or trace == "y"):
-                print("The best state to expand with a g(n) = " + str(currDepth) + " and h(n) = " + str(currNode[2].cost - currDepth)  )
-                printPuzzle(currPuzzle) 
-
-        #if the current node is goal state then return it and print metrics
-        if (currPuzzle == goal):
-            print("Reached goal state!")
-            if(solution == "Y" or solution == "y"):
-                print("Here's the solution path:")
-                solPath(currNode)
-            print("Solution Depth: " + str(currNode[2].depth))
-            print("Total Nodes Expanded: " + str(nodesExpanded))
-            print("Max Queue Size: " + str(maxQueue))
-            #Print out time elapsed
-            totalTime = time.time() - startTime
+            totalTime = time.perf_counter() - startTime
             if (totalTime >= 60):
                 totalTime = totalTime / 60
                 totalTime = round(totalTime, 1)
