@@ -1,0 +1,114 @@
+Hello there, welcome to my 8-Puzzle Solver.
+If you want to use a preset puzzle, enter '1'. If instead you want to create your own, enter '2'.
+Choose a difficulty for your puzzle. Difficulty ranges from 1-8, with 1 being the easiest and 8 the hardest.
+You chose 'Easy' difficulty
+Choose algorithm to solve puzzle. 
+ (1): Uniform Cost Search 
+ (2): A* with Misplaced Tile Heuristic 
+ (3): A* with Manhattan Distance Heuristic 
+You chose to solve the puzzle with the A* algorithm and the Manhattan Distance heuristic
+Initial puzzle: 
+[1, 3, 6]
+[5, 0, 2]
+[4, 7, 8]
+
+
+The best state to expand with a g(n) = 1 and h(n) = 8
+[1, 3, 6]
+[5, 2, 0]
+[4, 7, 8]
+
+
+The best state to expand with a g(n) = 2 and h(n) = 6
+[1, 3, 0]
+[5, 2, 6]
+[4, 7, 8]
+
+
+The best state to expand with a g(n) = 3 and h(n) = 5
+[1, 0, 3]
+[5, 2, 6]
+[4, 7, 8]
+
+
+The best state to expand with a g(n) = 4 and h(n) = 4
+[1, 2, 3]
+[5, 0, 6]
+[4, 7, 8]
+
+
+The best state to expand with a g(n) = 5 and h(n) = 3
+[1, 2, 3]
+[0, 5, 6]
+[4, 7, 8]
+
+
+The best state to expand with a g(n) = 6 and h(n) = 2
+[1, 2, 3]
+[4, 5, 6]
+[0, 7, 8]
+
+
+The best state to expand with a g(n) = 7 and h(n) = 1
+[1, 2, 3]
+[4, 5, 6]
+[7, 0, 8]
+
+
+The best state to expand with a g(n) = 8 and h(n) = 0
+[1, 2, 3]
+[4, 5, 6]
+[7, 8, 0]
+
+
+Reached goal state!
+Here's the solution path:
+[1, 3, 6]
+[5, 0, 2]
+[4, 7, 8]
+
+
+[1, 3, 6]
+[5, 2, 0]
+[4, 7, 8]
+
+
+[1, 3, 0]
+[5, 2, 6]
+[4, 7, 8]
+
+
+[1, 0, 3]
+[5, 2, 6]
+[4, 7, 8]
+
+
+[1, 2, 3]
+[5, 0, 6]
+[4, 7, 8]
+
+
+[1, 2, 3]
+[0, 5, 6]
+[4, 7, 8]
+
+
+[1, 2, 3]
+[4, 5, 6]
+[0, 7, 8]
+
+
+[1, 2, 3]
+[4, 5, 6]
+[7, 0, 8]
+
+
+[1, 2, 3]
+[4, 5, 6]
+[7, 8, 0]
+
+
+Solution Depth: 8 
+Total Nodes Expanded: 8
+Max Queue Size: 10
+Time elapsed: 1.2 seconds
