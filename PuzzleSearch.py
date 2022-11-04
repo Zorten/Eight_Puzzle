@@ -1,10 +1,17 @@
-#CS170 Project 1: The Eight Puzzle
-#Program is meant to solve the eight puzzle using:
-### Uniform Cost Search 
-### A* with Misplaced Tile Heuristic.
-### A* with Manhattan Distance Heuristic.
+#####Author: Zergio Ruvalcaba
+#####CS170 Project 1: The Eight Puzzle
+## Project Description: This program will solve the eight puzzle using one of three algorithms:
+##    Uniform Cost Search 
+##    A* with Misplaced Tile Heuristic.
+##    A* with Manhattan Distance Heuristic.
+## The user can choose from 8 different preset puzzles, or they can enter their own.
+## Only valid 8-Puzzles will be solved
+#
+# I acknowledge all content contained herein, excluding template, provided code, or example
+# code, is my own original work.
+#
 
-from queue import Empty, PriorityQueue
+from queue import PriorityQueue
 import copy
 import time
 #####Sample puzzles, blank space represented with 0
@@ -302,8 +309,8 @@ def uniformCost(puzzle, heuristic):
     printPuzzle(puzzle)
 
     #For testing purposes
-    trace = str(input("Would you like to print out the trace path? [Y/N] "))
-    solution = str(input("Would you like to print out the solution path? [Y/N] "))
+    trace = "n" #str(input("Would you like to print out the trace path? [Y/N] "))
+    solution = "n" #str(input("Would you like to print out the solution path? [Y/N] "))
 
     #hardcode h(n) to be zero
     hVal = heuristic
@@ -349,7 +356,8 @@ def uniformCost(puzzle, heuristic):
             print("Total Nodes Expanded: " + str(nodesExpanded))
             print("Max Queue Size: " + str(maxQueue))
             #Print out time elapsed
-            totalTime = time.time() - startTime
+            endTime = time.time() 
+            totalTime = endTime - startTime
             if (totalTime >= 60):
                 totalTime = totalTime / 60
                 totalTime = round(totalTime, 1)
@@ -394,15 +402,15 @@ def uniformCost(puzzle, heuristic):
 #####Function for A* with Misplaced Tile Heuristic
 def a_star(puzzle, heuristic):
     #Begin timer to track time elapsed 
-    startTime = time.perf_counter()
+    startTime = time.time()
 
     #Print out puzzle we are trying to solve
     print("Initial puzzle: ")
     printPuzzle(puzzle)
 
     #For testing purposes
-    trace = str(input("Would you like to print out the trace path? [Y/N] "))
-    solution = str(input("Would you like to print out the solution path? [Y/N] "))
+    trace = "n" #str(input("Would you like to print out the trace path? [Y/N] "))
+    solution = "n" #str(input("Would you like to print out the solution path? [Y/N] "))
 
     #keep track of total number of nodes expanded
     nodesExpanded = 0
@@ -448,7 +456,8 @@ def a_star(puzzle, heuristic):
             print("Total Nodes Expanded: " + str(nodesExpanded))
             print("Max Queue Size: " + str(maxQueue))
             #Print out time elapsed
-            totalTime = time.perf_counter() - startTime
+            endTime = time.time()
+            totalTime = endTime - startTime
             if (totalTime >= 60):
                 totalTime = totalTime / 60
                 totalTime = round(totalTime, 1)
