@@ -102,3 +102,29 @@ From the data gathered here, it can be observed that for runtime, space complexi
 
 All my code, along with tracebacks for the depth 8 and depth 24 test case puzzles are in this GitHub repository.
 The time results for these puzzles are longer since the traceback was printed, something I was not doing when running my test cases.
+
+## Resources 
+
+To complete this project, I referenced the following:
+
+1. Provided project assignment file and the sample report contained therein:
+	a. Project_1_The_Eight_Puzzle_CS_170_2022.pdf
+
+2. Dr. Keogh’s Lecture Slides:
+	a. 2__Blind Search_part1.pptx
+	b. 2__Blind Search_part2.pptx
+   	c. 3__Heuristic Search.pptx
+	d. Eight-Puzzle_briefing_and_review_of_search.pptx
+
+3. Python 3.11.0 Documentation
+
+4. W3Schools Tutorials:
+	a. Python Lists
+	b. Python Dictionaries
+	c. Python Tuples
+	d. Python Classes
+
+5. Python modules used:
+	a. time — Time access and conversions
+	b. queue — A synchronized queue class
+	c. copy — Shallow and deep copy operations
