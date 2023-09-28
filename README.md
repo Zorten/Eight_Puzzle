@@ -111,20 +111,20 @@ To complete this project, I referenced the following:
 	- [a. Project_1_The_Eight_Puzzle_CS_170_2022.pdf](https://www.dropbox.com/sh/cp90q8nlk8od4cw/AADK4L3qOh-OJtFzdi_8Moaka?dl=0&preview=Project_1_The_Eight_Puzzle_CS_170_2022.pdf)
 
 2. Dr. Keogh’s Lecture Slides:
-	- [a. 2__Blind Search_part1.pptx]()
-	- [b. 2__Blind Search_part2.pptx]()
-   	- c. 3__Heuristic Search.pptx
-	- d. Eight-Puzzle_briefing_and_review_of_search.pptx
+	- [a. 2__Blind Search_part1.pptx](https://www.dropbox.com/sh/rltooq0t3khobuj/AAA3MYkZc8gb1RLa3tNSnsrga?dl=0&preview=2__Blind+Search_part1.pptx)
+	- [b. 2__Blind Search_part2.pptx](https://www.dropbox.com/sh/rltooq0t3khobuj/AAA3MYkZc8gb1RLa3tNSnsrga?dl=0&preview=2__Blind+Search_part2.pptx)
+   	- [c. 3__Heuristic Search.pptx](https://www.dropbox.com/sh/rltooq0t3khobuj/AAA3MYkZc8gb1RLa3tNSnsrga?dl=0&preview=3__Heuristic+Search.pptx)
+	- [d. Eight-Puzzle_briefing_and_review_of_search.pptx](https://www.dropbox.com/sh/rltooq0t3khobuj/AAA3MYkZc8gb1RLa3tNSnsrga?dl=0&preview=Eight-Puzzle_briefing_and_review_of_search.pptx)
 
 3. Python 3.11.0 Documentation
 
 4. W3Schools Tutorials:
-	- a. Python Lists
-	- b. Python Dictionaries
-	- c. Python Tuples
-	- d. Python Classes
+	- [a. Python Lists](https://www.w3schools.com/python/python_lists.asp)
+	- [b. Python Dictionaries](https://www.w3schools.com/python/python_dictionaries.asp)
+	- [c. Python Tuples](https://www.w3schools.com/python/python_tuples.asp)
+	- [d. Python Classes](https://www.w3schools.com/python/python_classes.asp)
 
 5. Python modules used:
-	- a. time — Time access and conversions
-	- b. queue — A synchronized queue class
-	- c. copy — Shallow and deep copy operations
+	- [a. time — Time access and conversions](https://docs.python.org/3/library/time.html#time.perf_counter)
+	- [b. queue — A synchronized queue class](https://docs.python.org/3/library/queue.html)
+	- [c. copy — Shallow and deep copy operations](https://docs.python.org/3/library/copy.html)
