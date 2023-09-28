@@ -108,23 +108,23 @@ The time results for these puzzles are longer since the traceback was printed, s
 To complete this project, I referenced the following:
 
 1. Provided project assignment file and the sample report contained therein:
-	a. Project_1_The_Eight_Puzzle_CS_170_2022.pdf
+	- [a. Project_1_The_Eight_Puzzle_CS_170_2022.pdf](https://www.dropbox.com/sh/cp90q8nlk8od4cw/AADK4L3qOh-OJtFzdi_8Moaka?dl=0&preview=Project_1_The_Eight_Puzzle_CS_170_2022.pdf)
 
 2. Dr. Keogh’s Lecture Slides:
-	a. 2__Blind Search_part1.pptx
-	b. 2__Blind Search_part2.pptx
-   	c. 3__Heuristic Search.pptx
-	d. Eight-Puzzle_briefing_and_review_of_search.pptx
+	- [a. 2__Blind Search_part1.pptx]()
+	- [b. 2__Blind Search_part2.pptx]()
+   	- c. 3__Heuristic Search.pptx
+	- d. Eight-Puzzle_briefing_and_review_of_search.pptx
 
 3. Python 3.11.0 Documentation
 
 4. W3Schools Tutorials:
-	a. Python Lists
-	b. Python Dictionaries
-	c. Python Tuples
-	d. Python Classes
+	- a. Python Lists
+	- b. Python Dictionaries
+	- c. Python Tuples
+	- d. Python Classes
 
 5. Python modules used:
-	a. time — Time access and conversions
-	b. queue — A synchronized queue class
-	c. copy — Shallow and deep copy operations
+	- a. time — Time access and conversions
+	- b. queue — A synchronized queue class
+	- c. copy — Shallow and deep copy operations
